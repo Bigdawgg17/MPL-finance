@@ -1,0 +1,28 @@
+import yfinance as yf
+import mplfinance as mpf
+import ta
+
+df = yf.download('NVDA', start='2024-07-01')
+
+mpf.plot(df, type='candle', mav=(10, 20), volume=True, tight_layout=True, style='default')
+
+mpf.available_styles()
+
+df['EMA50'] = ta.trend.ema_indicator(df.Close, 50)
+df['EMA25'] = ta.trend.ema_indicator(df.Close, 25)
+
+EMA = [mpf.make_addplot(df.EMA50, type='line', color='r', width=0.5),
+       mpf.make_addplot(df.EMA25, type='line', color='b', width=0.5)]
+       
+mpf.plot(df, type='candle', addplot=EMA)
+
+datepairs = [('2024-07-01','2024-10-01')]
+
+mpf.plot(df, type='candle', tlines=[dict(tlines=datepairs, colors='b', linewidths=0.5)])
+
+df['RSI'] = ta.momentum.rsi(df.Close, 14)
+
+RSI = mpf.make_addplot(df.RSI, type='line', color='b', width=0.5, panel=1, title='RSI')
+
+mpf.plot(df, type='candle', main_panel=0, addplot = RSI, figscale=2, figratio=(8,5))
+
